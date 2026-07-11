@@ -11,3 +11,6 @@
 
 # Logs
 *.log
+
+# Local docs
+code-explanation.csv
