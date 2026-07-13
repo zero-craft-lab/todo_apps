@@ -75,7 +75,7 @@ function createTodoElement(id, text, done = false, dueDate = '') {
 
 function addTodo() {
   const text = input.value.trim();
-  if (!text) return;
+  if (!text || !dueDateInput.value) return;
 
   const id = Date.now();
   list.appendChild(createTodoElement(id, text, false, dueDateInput.value));
