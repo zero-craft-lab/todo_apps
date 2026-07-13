@@ -3,12 +3,22 @@ const dueDateInput = document.getElementById('due-date');
 const addBtn = document.getElementById('add-btn');
 const list = document.getElementById('todo-list');
 
+const MEMO_TEMPLATE = `-----詳細-----
+
+-----詳細の設定理由-----
+
+-----期限の理由-----
+
+-----注意点-----
+`;
+
 function saveTodos() {
   const items = [...list.querySelectorAll('.todo-item')].map(li => ({
     id: li.dataset.id,
     text: li.querySelector('label').textContent,
     done: li.classList.contains('done'),
     dueDate: li.dataset.dueDate || '',
+    memo: li.querySelector('.memo-text')?.value || '',
   }));
   localStorage.setItem('todos', JSON.stringify(items));
 }
@@ -26,7 +36,7 @@ function formatDate(dueDate) {
   return `${parseInt(month)}/${parseInt(day)}`;
 }
 
-function createTodoElement(id, text, done = false, dueDate = '') {
+function createTodoElement(id, text, done = false, dueDate = '', memo = '') {
   const li = document.createElement('li');
   li.className = 'todo-item';
   if (done) li.classList.add('done');
@@ -50,6 +60,10 @@ function createTodoElement(id, text, done = false, dueDate = '') {
   const label = document.createElement('label');
   label.htmlFor = `todo-${id}`;
   label.textContent = text;
+  label.addEventListener('click', (e) => {
+    e.preventDefault();
+    memoArea.classList.toggle('open');
+  });
 
   if (dueDate) {
     dueDateSpan = document.createElement('span');
@@ -67,9 +81,26 @@ function createTodoElement(id, text, done = false, dueDate = '') {
     saveTodos();
   });
 
+  const memoArea = document.createElement('div');
+  memoArea.className = 'memo-area';
+
+  const memoText = document.createElement('textarea');
+  memoText.className = 'memo-text';
+  memoText.value = memo || MEMO_TEMPLATE;
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'memo-save-btn';
+  saveBtn.textContent = '保存';
+  saveBtn.addEventListener('click', () => {
+    saveTodos();
+    memoArea.classList.remove('open');
+  });
+
+  memoArea.append(memoText, saveBtn);
+
   li.append(checkbox, label);
   if (dueDateSpan) li.append(dueDateSpan);
-  li.append(deleteBtn);
+  li.append(deleteBtn, memoArea);
   return li;
 }
 
@@ -89,8 +120,8 @@ function addTodo() {
 function loadTodos() {
   const saved = localStorage.getItem('todos');
   if (!saved) return;
-  JSON.parse(saved).forEach(({ id, text, done, dueDate }) => {
-    list.appendChild(createTodoElement(id, text, done, dueDate || ''));
+  JSON.parse(saved).forEach(({ id, text, done, dueDate, memo }) => {
+    list.appendChild(createTodoElement(id, text, done, dueDate || '', memo || ''));
   });
 }
 
