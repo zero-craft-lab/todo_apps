@@ -3,6 +3,15 @@ const dueDateInput = document.getElementById('due-date');
 const addBtn = document.getElementById('add-btn');
 const list = document.getElementById('todo-list');
 
+const MEMO_TEMPLATE = `-----詳細-----
+
+-----詳細の設定理由-----
+
+-----期限の理由-----
+
+-----注意点-----
+`;
+
 function saveTodos() {
   const items = [...list.querySelectorAll('.todo-item')].map(li => ({
     id: li.dataset.id,
@@ -77,8 +86,7 @@ function createTodoElement(id, text, done = false, dueDate = '', memo = '') {
 
   const memoText = document.createElement('textarea');
   memoText.className = 'memo-text';
-  memoText.placeholder = 'メモを入力...';
-  memoText.value = memo;
+  memoText.value = memo || MEMO_TEMPLATE;
 
   const saveBtn = document.createElement('button');
   saveBtn.className = 'memo-save-btn';
